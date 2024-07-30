@@ -35,3 +35,8 @@
         + Выполняет Ansible Playbook для развертывания приложения на удаленном сервере через SSH.
 
     2. Настроил секреты в GitHub для Docker Hub и SSH-доступа к серверу.
+# Инструкция по запуску докер образа:
+    1. Клонируйте репозиторий или создайте файлы Dockerfile, app.py и requirements.txt
+    2. Соберите Docker image: docker build -t my-python-app .
+    3. Запустите контейнер: docker run -d -p 5000:5000 my-python-app
+    4. Перейдите в браузере по адресу http://Your_IP:5000, чтобы увидеть приложение.
