@@ -1,42 +1,31 @@
-# **Все папки и файлы находятся в ветке master!**
-Проект представляет собой веб-приложение на Flask, развернутое в Docker-контейнере. Для автоматизации процесса сборки и развертывания используется GitHub Actions и Docker Hub. Приложение развертывается на удаленном сервере EC2 с помощью Ansible и SSH.
-### **В папке *final_project_app* находятся:**
-* app.py - веб-приложение, написанное с использованием библиотеки Flask
-* requirements.txt - файл для установки использованных библиотек с соответсвующиими версиями
-* Dockerfile
-### **В папке *final_project_deployment* находятся:**
-* inventory - файл с хостом и именем удаленного сервера, используемая для *ansible-playbook*
-* playbook1.yml - файл установки Docker на удаленный сервер, если он еще не установлен, и запуска контейнера
-## **Для данного веб приложения используется порт 5000!**
+# **Создание новой БД с помощью *dbca*.**
+    1. Запустить `dbca` на сервере или виртуальной машине. 
+        Database Operations: Выбрать опцию *"Create a database"* и нажать "Next".
+    
+    2. Выбор шаблона базы данных (Creation Mode):
+        Выбрать "Advanced Mode" для большего контроля над параметрами. 
+        Deployment Type: Затем выбрать шаблон "General Purpose or Transaction Processing".
+    
+    3. Базовая информация о базе данных (Database Identification):
+        Ввести имя базы данных (Global Database Name) и SID (System Identifier). В моем случае:
+            Global Database Name: finalproject
+            SID: finalproject
+        Убрать галочку с "Create as Container Database", если она стоит
+        
+    4. Storage option: Переключить radiobutton на "Use folowing for the ...." и убрать галочку с "Use Oracle-Managed Files"
 
-# **Этапы создания проекта:**
-1. Создание `веб-приложения`
-    Разработал простое веб-приложение на *Flask*, которое выводит приветственное сообщение с именем пользователя.
-   
-2. Создание `Docker-контейнера`
-   1) Написал *Dockerfile*, который:
-       + Использует базовый образ *Python*.
-       + Устанавливает зависимости из *requirements.txt*.
-       + Копирует исходный код приложения.
-       + Запускает *Flask-приложение*.
-   2) Сборка и тестирование Docker-образа для веб-приложения.
+    5. Fast recovery option: убрать все галочки и нажать Next
 
-3. Настройка `Ansible`
-    1. Создал *Ansible Playbook* для развертывания *Docker-контейнера*:
-        + Устанавливает *Docker* на удаленном сервере.
-        + Пуллит *Docker-образ*.
-        + Запускает контейнер с приложением.
-    2. Убедился, что Playbook идемпотентен и работает корректно.
+    6. Network Configuration: выбрать существующий Listener или создать новый
 
-4. Настройка `GitHub Actions`
-    1. Настроил GitHub Actions workflow:
-        + Автоматически собирает Docker-образ при пуше в ветку master.
-        + Загружает Docker-образ в Docker Hub.
-        + Выполняет Ansible Playbook для развертывания приложения на удаленном сервере через SSH.
+    7. Data Vault Option: убрать все галочки, если они стоят
 
-    2. Настроил секреты в GitHub для Docker Hub и SSH-доступа к серверу.
-# Инструкция по запуску докер образа:
-    1. Клонируйте репозиторий или создайте файлы Dockerfile, app.py и requirements.txt
-    2. Соберите Docker image: docker build -t my-python-app .
-    3. Запустите контейнер: docker run -d -p 5000:5000 my-python-app
-    4. Перейдите в браузере по адресу http://Your_IP:5000, чтобы увидеть приложение.
+    8. Configuration options: Выбрать метод управления памятью "Automatic Shared Memory Management". Настроить параметры SGA и PGA, если это необходимо.
+        Затем в вкладке Sample Schemas поставить галочку на "Add sample...".
+
+    9. Managments Options: убрать все галочки
+
+    10. User credentials: выбрать "Use the same administative..." и ввести пароль
+
+    11. Creation Option: ставим галочку только на Create Database и нажимаем Next
+    Далее нажимаем Finish и ждем загрузки. При окончании загруски нажимаем close.
