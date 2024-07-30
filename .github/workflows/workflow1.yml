@@ -13,18 +13,20 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
+      - name: List directory contents
+        run: |
+          ls -R
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Build Docker image
         run: |
-          # Переход в директорию, где находится Dockerfile
           cd final_project_app
-          # Сборка Docker образа
           docker build -t ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest -f Dockerfile .
-
-      - name: Log in to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker image to Docker Hub
         run: |
@@ -37,18 +39,11 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Установка Docker и Ansible на сервере
-            sudo apt update
-            sudo apt install -y docker.io ansible
-
-            # Удаление старого контейнера
+            # Remove existing container if it exists
             sudo docker container rm -f simple-flask-app || true
-
-            # Pull нового Docker-образа
+            # Pull the latest Docker image
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest
-
-            # Запуск нового Docker-контейнера
+            # Run the new container
             sudo docker run -d --name simple-flask-app -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest
-
-            # Опционально: проверка состояния контейнера
+            # Check running containers
             sudo docker ps
