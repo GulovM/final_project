@@ -18,14 +18,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:${{ github.sha }} -f final_project/final_project_app/Dockerfile .
+          cd final_project/final_project_app
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest -f Dockerfile .
 
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest
 
       - name: Deploy to EC2 with SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -42,10 +43,10 @@ jobs:
             sudo docker container rm -f simple-flask-app || true
 
             # Pull нового Docker-образа
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:${{ github.sha }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest
 
             # Запуск нового Docker-контейнера
-            sudo docker run -d --name simple-flask-app -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:${{ github.sha }}
+            sudo docker run -d --name simple-flask-app -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/simple-flask-app:latest
 
             # Опционально: проверка состояния контейнера
             sudo docker ps
